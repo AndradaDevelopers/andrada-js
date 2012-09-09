@@ -13,14 +13,13 @@
 
 gamecore.Base.extend("Andrada.Core.Networking.Socket",
 	{
-		
-	},
-	{
 		CONNECTING: 0,
 		OPEN: 0,
 		CLOSING: 2,
 		CLOSED: 3,
-		HEARTBEAT_DELAY: 20000,
+		HEARTBEAT_DELAY: 20000,	
+	},
+	{
 		websocket: null,
 		isClosed: true,
 		readyState: 3,
@@ -29,17 +28,19 @@ gamecore.Base.extend("Andrada.Core.Networking.Socket",
 		delayMax: 10000,
 
 		init: function(url){
-			isClosed = false;
-			readyState = CONNECTING;
-			websocket = _getUnderlyingSocket();
-			if (!websocket) {
+			this.isClosed = false;
+			this.readyState = Andrada.Core.Networking.Socket.CONNECTING;
+			this.websocket = new (this._getUnderlyingSocket())(url);
+
+			if (!this.websocket) {
 				this.ondisconnect();
 				return false;
 			}
-			websocket.onopen = _transportonopen;
-			websocket.onclose = _transportonclose;
-			websocket.onmessage = _transportonmessage;
-			websocket.onerror = _transportonclose;
+			this.websocket.onopen = this._transportonopen;
+			this.websocket.onclose = this._transportonclose;
+			this.websocket.onmessage = this._transportonmessage;
+			this.websocket.onerror = this._transportonclose;
+			this.websocket.wrapper = this;
 		},
 		_getUnderlyingSocket: function() {
 			if (window.WebSocket) {
@@ -47,37 +48,37 @@ gamecore.Base.extend("Andrada.Core.Networking.Socket",
 			}
 			return false;
 		},
-		send: function(data) {
-			if (websocket) {
+		send: function(packet) {
+			if (this.websocket) {
 				if (!packet.isA('Packet')) {
 					throw new Error(Andrada.Core.Networking.Exceptions.NOT_A_PACKET_EXCEPTION);
 				}
-				return websocket.send(data);
+				return this.websocket.send(packet);
 			}
 			return false;
 		},
 		close: function() {
-			if (websocket) {
-				readyState = CLOSING;
-				websocket.close();
+			if (this.websocket) {
+				this.readyState = Andrada.Core.Networking.Socket.CLOSING;
+				this.websocket.close();
 			}
 		},
 
 		_transportonopen: function() {
 			//Initialize heartbeat to keep socket alive
-			this.heartbeat = setInterval(function(){this.onheartbeat();}, HEARTBEAT_DELAY);
-			if (readyState != OPEN) {
-				readyState = OPEN;
-				this.onopen();
+			this.wrapper.heartbeat = setInterval(function(){this.wrapper.onheartbeat();}, Andrada.Core.Networking.Socket.HEARTBEAT_DELAY);
+			if (this.wrapper.readyState != Andrada.Core.Networking.Socket.OPEN) {
+				this.wrapper.readyState = Andrada.Core.Networking.Socket.OPEN;
+				this.wrapper.onopen();
 			}
 		},
 		_transportonclose: function() {
-			clearInterval(this.heartbeat);
-			readyState = CLOSED;
-			this.onclose();
+			clearInterval(this.wrapper.heartbeat);
+			this.wrapper.readyState = Andrada.Core.Networking.Socket.CLOSED;
+			this.wrapper.onclose();
 		},
 		_transportonmessage: function(packet) {
-			this.onmessage(packet);
+			this.wrapper.onmessage(packet);
 		},
 
 		//Default signatures
@@ -96,6 +97,17 @@ gamecore.Base.extend("Andrada.Core.Networking.Packet",
 	}
 
 );
+gamecore.Base.extend("Andrada.Core.Networking.PacketHandler", 
+	{
+		register: function(packetId, callback) {
+			
+		}
+	},
+	{
+		init: function() {
 
+		}
+	}
+);
 
 
