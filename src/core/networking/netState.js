@@ -1,4 +1,3 @@
-
 /*
 * Basic websocket wrapper
 * Andrada.Core.Networking.NetState
