@@ -5,7 +5,8 @@ class Build < Thor
   FILES = [
     "src/globals.js", "src/core/graphics/tile.js", "src/core/graphics/zone.js", "src/core/graphics/particle.js", 
     "src/core/graphics/particleEmmiter.js", "src/core/graphics/item.js", "src/core/graphics/mobile.js",
-    "src/core/networking/util.js", "src/core/networking/exceptions.js", "src/core/networking/packet.js", "src/core/networking/packetHandler.js", 
+    "src/core/networking/util.js", "src/core/networking/packet.js", "src/core/networking/packetHandler.js", 
+    "src/core/networking/exceptions.js", 
     "src/core/networking/packetReader.js", "src/core/networking/packetWriter.js", "src/core/networking/messagePump.js", "src/core/networking/sendQueue.js", "src/core/networking/netState.js", "src/core/asset.js", "src/core/assetBundle.js", "src/core/sound.js", 
     "src/core/assetManager.js", "src/core/soundManager.js", "src/core/inputManager.js", "src/game/container.js", "src/game/creature.js", 
     "src/game/monster.js", "src/game/player.js", "src/game/npc.js", "src/game/stage.js", "src/game/stageManager.js", "src/game/engine.js"

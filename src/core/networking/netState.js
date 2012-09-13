@@ -28,11 +28,10 @@ gamecore.Base.extend("Andrada.Core.Networking.NetState",
 				this.ondisconnect();
 				return false;
 			}
-			this.websocket.onopen = this._transportonopen;
-			this.websocket.onclose = this._transportonclose;
-			this.websocket.onmessage = this._transportonmessage;
-			this.websocket.onerror = this._transportonclose;
-			this.websocket.wrapper = this;
+			this.websocket.onopen = this.callback("_transportonopen");
+			this.websocket.onclose = this.callback("_transportonclose");
+			this.websocket.onmessage = this.callback("_transportonmessage");
+			this.websocket.onerror = this.callback("_transportonclose");
 		},
 		_getUnderlyingSocket: function() {
 			if (window.WebSocket) {
@@ -58,19 +57,19 @@ gamecore.Base.extend("Andrada.Core.Networking.NetState",
 
 		_transportonopen: function() {
 			//Initialize heartbeat to keep socket alive
-			this.wrapper.heartbeat = setInterval(function(){this.wrapper.onheartbeat();}, Andrada.Core.Networking.NetState.HEARTBEAT_DELAY);
-			if (this.wrapper.readyState != Andrada.Core.Networking.NetState.OPEN) {
-				this.wrapper.readyState = Andrada.Core.Networking.NetState.OPEN;
-				this.wrapper.onopen();
+			this.heartbeat = setInterval(function(){this.onheartbeat();}, Andrada.Core.Networking.NetState.HEARTBEAT_DELAY);
+			if (this.readyState != Andrada.Core.Networking.NetState.OPEN) {
+				this.readyState = Andrada.Core.Networking.NetState.OPEN;
+				this.onopen();
 			}
 		},
 		_transportonclose: function() {
-			clearInterval(this.wrapper.heartbeat);
-			this.wrapper.readyState = Andrada.Core.Networking.NetState.CLOSED;
-			this.wrapper.onclose();
+			clearInterval(this.heartbeat);
+			this.readyState = Andrada.Core.Networking.NetState.CLOSED;
+			this.onclose();
 		},
 		_transportonmessage: function(packet) {
-			this.wrapper.onmessage(packet);
+			this.onmessage(packet);
 		},
 
 		//Default signatures
